@@ -3,7 +3,6 @@
 
 namespace App\Presentation\Controllers;
 
-use App\Application\DTOs\Payment\AddressDto;
 use App\Application\DTOs\Payment\AddressMapper;
 use App\Domain\Payment\Contracts\Service\ClientServiceInterface;
 use App\Domain\Payment\Contracts\Service\InvoiceServiceInterface;
@@ -26,7 +25,14 @@ class HomeController extends Controller
 
     public function actionChangeAddress(Request $request, $clientId)
     {
-        $addressDto = AddressDto::fromArray([
+        $validated = $request->validate([
+            'country' => 'required|string',
+            'city' => 'required|string',
+            'zip' => 'required|string',
+            'lines' => 'required|array'
+        ]);
+
+        $address  = AddressMapper::fromArray([
             "country" => "RU",
             "city" => "Moscow",
             "zip" => "123456",
@@ -34,8 +40,7 @@ class HomeController extends Controller
                 "street1",
                 "street2"
             ]
-        ]);
-        $addressMapper = AddressMapper::fromDto($addressDto);
-        $this->clientService->changeAddress(1, $addressMapper);
+        ]); //ValueObject Address
+        $this->clientService->changeAddress($clientId, $address);
     }
 }
