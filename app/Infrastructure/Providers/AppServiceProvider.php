@@ -2,10 +2,12 @@
 
 namespace App\Infrastructure\Providers;
 
+use App\Application\Services\Payment\ClientService;
 use App\Application\Services\Payment\InvoiceService;
 use Illuminate\Support\ServiceProvider;
 use App\Domain\Payment\Contracts\Repository\ClientRepositoryInterface;
 use App\Domain\Payment\Contracts\Repository\InvoiceRepositoryInterface;
+use App\Domain\Payment\Contracts\Service\ClientServiceInterface;
 use App\Domain\Payment\Contracts\Service\InvoiceServiceInterface;
 use App\Infrastructure\Persistence\Eloquent\Payment\ClientRepository;
 use App\Infrastructure\Persistence\Eloquent\Payment\InvoiceRepository;
@@ -28,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             InvoiceServiceInterface::class,
             InvoiceService::class
+        );
+        $this->app->bind(
+            ClientServiceInterface::class,
+            ClientService::class
         );
         $this->app->bind(
             \App\Application\Contracts\EventDispatcherInterface::class,
