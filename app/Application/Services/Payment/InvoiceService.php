@@ -2,6 +2,7 @@
 
 namespace App\Application\Services\Payment;
 
+use App\Application\Contracts\EventDispatcherInterface;
 use App\Domain\Payment\Aggregate\Invoice;
 use App\Domain\Payment\Contracts\Repository\ClientRepositoryInterface;
 use App\Domain\Payment\Contracts\Repository\InvoiceRepositoryInterface;
@@ -13,7 +14,8 @@ class InvoiceService implements InvoiceServiceInterface
 {
     public function __construct(
         private ClientRepositoryInterface $clientRepository,
-        private InvoiceRepositoryInterface $invoiceRepository
+        private InvoiceRepositoryInterface $invoiceRepository,
+        private EventDispatcherInterface $eventDispatcher
     ) {}
 
     public function create(int $clientId)
@@ -29,8 +31,11 @@ class InvoiceService implements InvoiceServiceInterface
     public function reject(int $invoiceId)
     {
         $invoice = $this->invoiceRepository->findById($invoiceId);
-        $invoice->setStatus(new RejectedStatus());
+        $invoice->changeStatus(new RejectedStatus());
         $this->invoiceRepository->update($invoice);
+        foreach ($invoice->releaseEvents() as $event) {
+            $this->eventDispatcher->dispatch($event);
+        }
     }
     public function process(int $id) {}
 }

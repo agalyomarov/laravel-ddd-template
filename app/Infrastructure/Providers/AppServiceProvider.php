@@ -8,7 +8,7 @@ use App\Domain\Payment\Contracts\Repository\ClientRepositoryInterface;
 use App\Domain\Payment\Contracts\Repository\InvoiceRepositoryInterface;
 use App\Domain\Payment\Contracts\Service\InvoiceServiceInterface;
 use App\Infrastructure\Persistence\Eloquent\Payment\ClientRepository;
-use App\Infrastructure\Persistence\Eloquent\Payment\Repository\InvoiceRepository;
+use App\Infrastructure\Persistence\Eloquent\Payment\InvoiceRepository;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -28,6 +28,10 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(
             InvoiceServiceInterface::class,
             InvoiceService::class
+        );
+        $this->app->bind(
+            \App\Application\Contracts\EventDispatcherInterface::class,
+            \App\Infrastructure\Events\LaravelEventDispatcher::class
         );
     }
 
