@@ -23,14 +23,14 @@ class HomeController extends Controller
         return $invoice_id;
     }
 
-    public function actionChangeAddress(Request $request, $clientId)
+    public function actionChangeAddress(Request $request, int $clientId = 2)
     {
-        $validated = $request->validate([
-            'country' => 'required|string',
-            'city' => 'required|string',
-            'zip' => 'required|string',
-            'lines' => 'required|array'
-        ]);
+        // $validated = $request->validate([
+        //     'country' => 'required|string',
+        //     'city' => 'required|string',
+        //     'zip' => 'required|string',
+        //     'lines' => 'required|array'
+        // ]);
 
         $address  = AddressMapper::fromArray([
             "country" => "RU",
