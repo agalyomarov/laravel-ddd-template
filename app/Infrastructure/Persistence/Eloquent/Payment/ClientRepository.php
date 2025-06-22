@@ -25,5 +25,4 @@ class ClientRepository implements ClientRepositoryInterface
     }
     public function create() {}
     public function update(Client $client) {}
-    public function changeAddress($id, Address $address) {}
 }

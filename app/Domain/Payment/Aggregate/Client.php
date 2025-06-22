@@ -41,4 +41,9 @@ class Client
     {
         return $this->phone;
     }
+
+    public function changeAddress(Address $address)
+    {
+        $this->adress = $address;
+    }
 }

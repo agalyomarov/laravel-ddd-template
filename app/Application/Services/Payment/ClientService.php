@@ -17,7 +17,7 @@ class ClientService implements ClientServiceInterface
     public function changeAddress(int $id, Address $address)
     {
         $client = $this->clientRepository->findById($id);
-        $this->clientRepository->changeAddress($client->getId(), $address);
+        $client->changeAddress($address);
         $this->clientRepository->update($client);
     }
 }
