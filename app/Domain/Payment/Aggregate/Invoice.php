@@ -2,11 +2,14 @@
 
 namespace App\Domain\Payment\Aggregate;
 
+use App\Domain\Payment\Events\InvoiceStatusWasChangedEvent;
 use App\Domain\Payment\ValueObjects\LineItem;
 use App\Domain\Payment\ValueObjects\Status;
+use App\Domain\Shared\EventTrait;
 
 class Invoice
 {
+    use EventTrait;
     private int $id;
     private Client $client;
     private array $lineItems;
@@ -53,6 +56,7 @@ class Invoice
     {
         $this->status->ensureCanBeChangedTo($status);
         $this->status = $status;
+        $this->registerEvent(new InvoiceStatusWasChangedEvent($this));
     }
 
     public function addLineItem(LineItem $lineItem): void
