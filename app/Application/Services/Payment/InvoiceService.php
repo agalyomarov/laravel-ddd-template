@@ -23,6 +23,7 @@ class InvoiceService implements InvoiceServiceInterface
         $client = $this->clientRepository->findById($clientId);
         $invoice = new Invoice(1, $client);
         $invoice->setStatus(new NewStatus());
+
         $this->invoiceRepository->create($invoice);
         return $invoice->getId();
     }

@@ -23,7 +23,7 @@ class InvoiceRepository implements InvoiceRepositoryInterface
                 'client_id' => $invoice->getClient()->getId(),
                 'status' => $invoice->getStatus(),
             ]);
-
+            $invoice->setLineItems([]);
             foreach ($invoice->getLineItems() as $lineItem) {
                 DB::table('invoice_lines')->insert([
                     'invoice_id' => $invoiceId,
