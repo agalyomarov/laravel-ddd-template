@@ -1,61 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# CRM API — Создание и обработка заявок (DDD-подход)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## Описание
 
-## About Laravel
+Это пример архитектуры API для CRM-системы, реализованной по принципам **Domain-Driven Design (DDD)** и чистой архитектуры.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+В CRM заявки (`Lead`) создаются через API, а затем обрабатываются операторами, менеджерами и кредитным отделом. Вся бизнес-логика вынесена в доменный слой, контроллеры отвечают только за приём и отдачу данных.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Архитектурные принципы
 
-## Learning Laravel
+-   **Разделение слоёв:**
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+    -   **Presentation** — API контроллеры, прием и отдача HTTP-запросов
+    -   **Application** — сервисы и команды, реализующие бизнес-процессы
+    -   **Domain** — сущности, value objects, доменные события, бизнес-правила
+    -   **Infrastructure** — конкретные реализации репозиториев, интеграции, хранилища
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   **Изоляция домена:**
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+    -   Доменный слой не зависит от фреймворков и инфраструктуры
+    -   Бизнес-правила и валидация в доменных объектах и сервисах
+    -   Контроллеры и API — тонкие адаптеры
 
-## Laravel Sponsors
+-   **Роли и права:**
+    -   Управление доступом реализуется на уровне Application/Domain (политики, guards)
+    -   Операторы, менеджеры и кредитный отдел имеют разные возможности работы с заявками
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Структура проекта (пример)
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+```
 
-## Contributing
+app/
+├── Domain/
+│ └── Lead/
+│ ├── Entities/
+│ │ └── Lead.php
+│ ├── ValueObjects/
+│ │ └── LeadStatus.php
+│ ├── Events/
+│ │ └── LeadWasCreated.php
+│ ├── Repositories/
+│ │ └── LeadRepositoryInterface.php
+│ └── Policies/
+│ └── LeadAccessPolicy.php
+├── Application/
+│ └── Lead/
+│ ├── Commands/
+│ │ └── CreateLeadCommand.php
+│ ├── Handlers/
+│ │ └── CreateLeadHandler.php
+│ └── Services/
+│ └── LeadApplicationService.php
+├── Infrastructure/
+│ └── Persistence/
+│ └── SqlLeadRepository.php
+└── Presentation/
+└── Http/
+└── Controllers/
+└── LeadApiController.php
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Пример рабочего процесса создания заявки
 
-## Security Vulnerabilities
+1. **Клиент** отправляет POST-запрос на `/api/v1/leads`
+2. **LeadApiController** принимает и валидирует данные (через Form Request или вручную)
+3. Контроллер формирует **CreateLeadCommand** и передаёт в **CreateLeadHandler** (Application Layer)
+4. Handler создаёт новый объект **Lead** (Domain Entity) и сохраняет через **LeadRepositoryInterface**
+5. Генерируется событие **LeadWasCreated**, которое может обработать подписчик (например, уведомление менеджера)
+6. Ответ с ID созданной заявки возвращается клиенту
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## Роли и права
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+-   Проверки и ограничения на действия (создание, назначение, изменение статуса) реализуются через **Policies** в доменном слое или Application Service
+-   Роли:
+    -   **Оператор** — создание и первичная обработка заявок
+    -   **Менеджер** — управление заявками, изменение статусов
+    -   **Кредитный отдел** — финальное одобрение или отказ
+
+---
+
+## Технологии
+
+-   PHP 8+
+-   Laravel Framework (только для инфраструктуры и Presentation слоя)
+-   DDD + Clean Architecture
+-   PSR-4 автозагрузка
+-   Dependency Injection для сервисов и репозиториев
+
+---
+
+## Рекомендации по развитию
+
+-   Использовать события и слушатели для асинхронных процессов
+-   Реализовать CQRS (Command Query Responsibility Segregation) для сложных сценариев
+-   Добавить слой Application DTO для упрощения передачи данных
+-   Внедрить тесты на всех слоях: unit для Domain, интеграционные для Application, e2e для Presentation
+
+---
+
+## Контакты и помощь
+
+Если нужна помощь с реализацией — обращайтесь!
+
+---
+
+_Этот README описывает пример реализации DDD-архитектуры для CRM API по работе с заявками._
