@@ -1,8 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 namespace App\Domain\Lead\ValueObjects\Lead;
+
 
 abstract class Status
 {
