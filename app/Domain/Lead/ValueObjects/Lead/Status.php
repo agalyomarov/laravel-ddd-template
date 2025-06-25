@@ -4,37 +4,28 @@ declare(strict_types=1);
 
 namespace App\Domain\Lead\ValueObjects\Lead;
 
-abstract class Status
+use App\Domain\Lead\Enums\LeadStatus;
+
+final class Status
 {
-    protected $next = [];
+    private string $value;
 
-    public function getStatus(): string
+    private function __construct(string $value)
     {
-        return get_class($this);
-    }
-
-    public function canBeChangedTo(self $status): bool
-    {
-        $className = get_class($status);
-        return in_array($className, $this->next, true);
-    }
-
-    public function allowsModification(): bool
-    {
-        return true;
-    }
-
-    public function ensureCanBeChangedTo(self $status): void
-    {
-        if (!$this->canBeChangedTo($status)) {
-            throw new \Exception('Status cannot be changed');
+        if (!in_array($value, LeadStatus::cases(), true)) {
+            throw new \InvalidArgumentException("Недопустимое значение статуса: {$value}");
         }
+
+        $this->value = $value;
     }
 
-    public function ensureAllowsModification(): void
+    public function getValue(): string
     {
-        if (!$this->allowsModification()) {
-            throw new \Exception('Status cannot be changed');
-        }
+        return $this->value;
+    }
+
+    public function equals(self $other): bool
+    {
+        return $this->getValue() === $other->getValue();
     }
 }

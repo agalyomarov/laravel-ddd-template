@@ -4,68 +4,99 @@ declare(strict_types=1);
 
 namespace App\Domain\Lead\Entities;
 
-use App\Domain\Lead\ValueObjects\Lead\Id;
-use App\Domain\Lead\ValueObjects\Lead\Name;
-use App\Domain\Lead\ValueObjects\Lead\Phone;
-use App\Domain\Lead\ValueObjects\Lead\Status;
+use App\Domain\Lead\Enums\LeadStatusEnum;
+use InvalidArgumentException;
 
 final class Lead
 {
-    private Id $id;
-    private Name $name;
-    private Phone $phone;
-    private Status $status;
+    private int $id;
+    private string $name;
+    private string $phone;
+    private LeadStatusEnum $status;
     private ?string $comment;
 
-    public function __construct(Id $id, Name $name, Phone $phone, Status $status)
+    public function __construct(int $id, string $name, string $phone, LeadStatusEnum $status)
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->phone = $phone;
+        $this->id = $this->validateId($id);
+        $this->name = $this->validateName($name);
+        $this->phone = $this->validatePhone($phone);
         $this->status = $status;
     }
 
-    public function getId(): Id
+    private function validateId($data): int
+    {
+        if ($data < 0) {
+            throw new InvalidArgumentException('ID не может быть отрицательным.');
+        }
+
+        return $data;
+    }
+    private function validateName($data): string
+    {
+        $data = trim($data);
+
+        if ($data === '') {
+            throw new InvalidArgumentException('Имя не может быть пустым.');
+        }
+
+        if (mb_strlen($data) > 100) {
+            throw new InvalidArgumentException('Имя слишком длинное.');
+        }
+
+        return $data;
+    }
+    private function validatePhone($data): string
+    {
+        $data = trim($data);
+
+        if ($data === '') {
+            throw new InvalidArgumentException('Телефон не может быть пустым.');
+        }
+
+        if (startsWith($data, '+')) {
+            throw new InvalidArgumentException('Телефон не может начинаться с +.');
+        }
+
+        if (mb_strlen($data) != 11) {
+            throw new InvalidArgumentException('Телефон должен состоять из 11 цифр.');
+        }
+
+
+        return $data;
+    }
+    public function getId(): int
     {
         return $this->id;
     }
-
-    public function getName(): Name
+    public function getName(): string
     {
         return $this->name;
     }
-
-    public function getPhone(): Phone
+    public function getPhone(): string
     {
         return $this->phone;
     }
-
-    public function getStatus(): Status
+    public function getStatus(): string
     {
-        return $this->status;
+        return $this->status->value;
     }
-
     public function getComment(): ?string
     {
         return $this->comment;
     }
-
-    public function setName(Name $name): void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
-
-    public function setPhone(Phone $phone): void
+    public function setPhone(string $phone): void
     {
         $this->phone = $phone;
     }
-
     public function setComment(?string $comment): void
     {
         $this->comment = $comment;
     }
-
-    public function setStatus(Status $status): void
+    public function setStatus(LeadStatusEnum $status): void
     {
         $this->status = $status;
     }
