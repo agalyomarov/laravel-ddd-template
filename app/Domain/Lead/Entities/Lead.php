@@ -16,13 +16,14 @@ final class Lead
     private LeadStatusEnum $status;
     private ?string $comment;
 
-    public function __construct(string $name, string $phone, LeadStatusEnum $status)
+    public function __construct(string $name, string $phone, LeadStatusEnum $status, ?string $comment)
     {
         $this->name = $this->validateName($name);
         $this->phone = $this->validatePhone($phone);
+        $this->comment = $this->validateComment($comment);
         $this->status = $status;
     }
-    private function validateName($data): string
+    private function validateName(string $data): string
     {
         $data = trim($data);
 
@@ -36,7 +37,7 @@ final class Lead
 
         return $data;
     }
-    private function validatePhone($data): string
+    private function validatePhone(string $data): string
     {
         $data = trim($data);
 
@@ -55,8 +56,45 @@ final class Lead
 
         return $data;
     }
+    private function validateComment(string $data): ?string
+    {
+        if ($data !== null && mb_strlen($data) > 1000) {
+            throw new InvalidArgumentException('Комментарий слишком длинный');
+        }
+        return $data;
+    }
+    public function setId(int $data): void
+    {
+        if ($data < 1) {
+            throw new InvalidArgumentException('ID не может быть отрицательным.');
+        }
+
+        if ($this->id !== null) {
+            throw new LogicException('ID уже установлен.');
+        }
+
+        $this->id = $data;
+    }
+    public function setStatus(LeadStatusEnum $newStatus): void
+    {
+        if (!$this->status->canTransitionTo($newStatus)) {
+            throw new LogicException(
+                sprintf(
+                    'Нельзя изменить статус лида с "%s" на "%s".',
+                    $this->status->value,
+                    $newStatus->value
+                )
+            );
+        }
+
+        $this->status = $newStatus;
+    }
     public function getId(): int
     {
+        if ($this->id === null) {
+            throw new LogicException('ID ещё не установлен.');
+        }
+
         return $this->id;
     }
     public function getName(): string
@@ -71,36 +109,12 @@ final class Lead
     {
         return $this->status->value;
     }
-    public function getComment(): ?string
+    public function getStatusEnum(): LeadStatusEnum
     {
-        return $this->comment;
+        return $this->status;
     }
-    public function setId(int $data): void
+    public function getComment(): string
     {
-        if ($data < 0) {
-            throw new InvalidArgumentException('ID не может быть отрицательным.');
-        }
-
-        if ($this->id !== null) {
-            throw new LogicException('ID уже установлен.');
-        }
-
-        $this->id = $data;
-    }
-    public function setName(string $name): void
-    {
-        $this->name = $name;
-    }
-    public function setPhone(string $phone): void
-    {
-        $this->phone = $phone;
-    }
-    public function setComment(?string $comment): void
-    {
-        $this->comment = $comment;
-    }
-    public function setStatus(LeadStatusEnum $status): void
-    {
-        $this->status = $status;
+        return $this->comment ?? "";
     }
 }
