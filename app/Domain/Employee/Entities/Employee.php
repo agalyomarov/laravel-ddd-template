@@ -21,7 +21,6 @@ final class Employee
         $this->name = $this->validateName($name);
         $this->role = $role;
     }
-
     private function validateName(string $data): string
     {
         $data = trim($data);
@@ -36,7 +35,6 @@ final class Employee
 
         return $data;
     }
-
     public function getId(): int
     {
         if ($this->id === null) {
@@ -49,7 +47,6 @@ final class Employee
     {
         return $this->name;
     }
-
     public function getRole(): string
     {
         return $this->role->value;

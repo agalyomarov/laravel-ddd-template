@@ -47,4 +47,29 @@ enum LeadStatusEnum: string
             );
         }
     }
+
+    public function isNew(): bool
+    {
+        return $this === self::NEW;
+    }
+
+    public function isClosed(): bool
+    {
+        return $this === self::CLOSED;
+    }
+
+    public function isProcessing(): bool
+    {
+        return $this === self::PROCESSING;
+    }
+
+    public function isApproved(): bool
+    {
+        return $this === self::APPROVED;
+    }
+
+    public function isRejected(): bool
+    {
+        return $this === self::REJECTED;
+    }
 }

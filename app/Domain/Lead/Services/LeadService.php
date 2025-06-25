@@ -17,10 +17,8 @@ class LeadService
         private readonly LeadRepositoryInterface $repository
     ) {}
 
-    public function changeStatus(Lead $lead, RoleEnum $actorRole, string $newStatusValue): void
+    public function changeStatus(Lead $lead, RoleEnum $actorRole, LeadStatusEnum $newStatus): void
     {
-        $newStatus = LeadStatusEnum::fromValue($newStatusValue);
-
         $canChangeStatus = (new CanChangeLeadStatusSpecification(
             $actorRole,
             $lead->getStatusEnum(),

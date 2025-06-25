@@ -12,6 +12,7 @@ use LogicException;
 final class Lead
 {
     private ?int $id;
+    private ?int $employeeId;
     private string $name;
     private Phone $phone;
     private LeadStatusEnum $status;
@@ -40,6 +41,14 @@ final class Lead
 
         return $data;
     }
+    private function validateEmployeeId(int $data): int
+    {
+        if ($data < 1) {
+            throw new InvalidArgumentException('Employee ID не может быть отрицательным.');
+        }
+
+        return $data;
+    }
     private function validateName(string $data): string
     {
         $data = trim($data);
@@ -64,6 +73,10 @@ final class Lead
     public function setId(int $data): void
     {
         $this->id = $this->validateId($data);
+    }
+    public function setEmployeeId(int $data): void
+    {
+        $this->employeeId = $this->validateEmployeeId($data);
     }
     public function setStatus(LeadStatusEnum $newStatus): void
     {

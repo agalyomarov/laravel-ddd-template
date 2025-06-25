@@ -15,4 +15,9 @@ enum RoleEnum: string
         return self::tryFrom($value)
             ?? throw new \InvalidArgumentException("Недопустимое значение статуса: {$value}");
     }
+
+    public function equals(RoleEnum $role): bool
+    {
+        return $this->value === $role->value;
+    }
 }
