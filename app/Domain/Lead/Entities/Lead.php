@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Domain\Lead\Entities;
 
 use App\Domain\Lead\Enums\LeadStatusEnum;
+use App\Domain\Lead\ValueObjects\Lead\Phone;
 use InvalidArgumentException;
 use LogicException;
 
@@ -12,14 +13,18 @@ final class Lead
 {
     private ?int $id;
     private string $name;
-    private string $phone;
+    private Phone $phone;
     private LeadStatusEnum $status;
     private ?string $comment;
 
-    public function __construct(string $name, string $phone, LeadStatusEnum $status, ?string $comment)
-    {
+    public function __construct(
+        string $name,
+        Phone $phone,
+        LeadStatusEnum $status,
+        ?string $comment
+    ) {
         $this->name = $this->validateName($name);
-        $this->phone = $this->validatePhone($phone);
+        $this->phone = $phone;
         $this->comment = $this->validateComment($comment);
         $this->status = $status;
     }
@@ -34,25 +39,6 @@ final class Lead
         if (mb_strlen($data) > 100) {
             throw new InvalidArgumentException('Имя слишком длинное.');
         }
-
-        return $data;
-    }
-    private function validatePhone(string $data): string
-    {
-        $data = trim($data);
-
-        if ($data === '') {
-            throw new InvalidArgumentException('Телефон не может быть пустым.');
-        }
-
-        if (startsWith($data, '+')) {
-            throw new InvalidArgumentException('Телефон не может начинаться с +.');
-        }
-
-        if (mb_strlen($data) != 11) {
-            throw new InvalidArgumentException('Телефон должен состоять из 11 цифр.');
-        }
-
 
         return $data;
     }
@@ -77,16 +63,7 @@ final class Lead
     }
     public function setStatus(LeadStatusEnum $newStatus): void
     {
-        if (!$this->status->canTransitionTo($newStatus)) {
-            throw new LogicException(
-                sprintf(
-                    'Нельзя изменить статус лида с "%s" на "%s".',
-                    $this->status->value,
-                    $newStatus->value
-                )
-            );
-        }
-
+        $this->status->ensureCanBeChangedTo($newStatus);
         $this->status = $newStatus;
     }
     public function getId(): int
@@ -101,7 +78,7 @@ final class Lead
     {
         return $this->name;
     }
-    public function getPhone(): string
+    public function getPhone(): Phone
     {
         return $this->phone;
     }

@@ -2,6 +2,8 @@
 
 namespace App\Domain\Lead\Enums;
 
+use LogicException;
+
 enum LeadStatusEnum: string
 {
     case NEW = 'new';
@@ -27,5 +29,18 @@ enum LeadStatusEnum: string
     public function canTransitionTo(self $newStatus): bool
     {
         return in_array($newStatus, $this->allowedTransitions(), true);
+    }
+
+    public function ensureCanBeChangedTo(self $newStatus): void
+    {
+        if (!$this->canTransitionTo($newStatus)) {
+            throw new LogicException(
+                sprintf(
+                    'Нельзя изменить статус лида с "%s" на "%s".',
+                    $this->status->value,
+                    $newStatus->value
+                )
+            );
+        }
     }
 }

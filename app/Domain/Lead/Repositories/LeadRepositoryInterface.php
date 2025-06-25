@@ -9,8 +9,7 @@ use App\Domain\Lead\Entities\Lead;
 interface LeadRepositoryInterface
 {
     public function save(Lead $lead): void;
-
-    public function findById(int $id): Lead;
-
+    public function findById(int $id): ?Lead;
+    public function findAll(): iterable;
     public function delete(Lead $lead): void;
 }
