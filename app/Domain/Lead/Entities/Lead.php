@@ -6,30 +6,21 @@ namespace App\Domain\Lead\Entities;
 
 use App\Domain\Lead\Enums\LeadStatusEnum;
 use InvalidArgumentException;
+use LogicException;
 
 final class Lead
 {
-    private int $id;
+    private ?int $id;
     private string $name;
     private string $phone;
     private LeadStatusEnum $status;
     private ?string $comment;
 
-    public function __construct(int $id, string $name, string $phone, LeadStatusEnum $status)
+    public function __construct(string $name, string $phone, LeadStatusEnum $status)
     {
-        $this->id = $this->validateId($id);
         $this->name = $this->validateName($name);
         $this->phone = $this->validatePhone($phone);
         $this->status = $status;
-    }
-
-    private function validateId($data): int
-    {
-        if ($data < 0) {
-            throw new InvalidArgumentException('ID не может быть отрицательным.');
-        }
-
-        return $data;
     }
     private function validateName($data): string
     {
@@ -83,6 +74,18 @@ final class Lead
     public function getComment(): ?string
     {
         return $this->comment;
+    }
+    public function setId(int $data): void
+    {
+        if ($data < 0) {
+            throw new InvalidArgumentException('ID не может быть отрицательным.');
+        }
+
+        if ($this->id !== null) {
+            throw new LogicException('ID уже установлен.');
+        }
+
+        $this->id = $data;
     }
     public function setName(string $name): void
     {
