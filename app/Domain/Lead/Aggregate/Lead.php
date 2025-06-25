@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Lead\Entities;
+namespace App\Domain\Lead\Aggregate;
 
 use App\Domain\Lead\Enums\LeadStatusEnum;
 use App\Domain\Lead\ValueObjects\Lead\Phone;
@@ -28,6 +28,18 @@ final class Lead
         $this->comment = $this->validateComment($comment);
         $this->status = $status;
     }
+    private function validateId(int $data): int
+    {
+        if ($data < 1) {
+            throw new InvalidArgumentException('ID не может быть отрицательным.');
+        }
+
+        if ($this->id !== null) {
+            throw new LogicException('ID уже установлен.');
+        }
+
+        return $data;
+    }
     private function validateName(string $data): string
     {
         $data = trim($data);
@@ -51,15 +63,7 @@ final class Lead
     }
     public function setId(int $data): void
     {
-        if ($data < 1) {
-            throw new InvalidArgumentException('ID не может быть отрицательным.');
-        }
-
-        if ($this->id !== null) {
-            throw new LogicException('ID уже установлен.');
-        }
-
-        $this->id = $data;
+        $this->id = $this->validateId($data);
     }
     public function setStatus(LeadStatusEnum $newStatus): void
     {

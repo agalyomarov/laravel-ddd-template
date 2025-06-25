@@ -8,6 +8,8 @@ enum LeadStatusEnum: string
 {
     case NEW = 'new';
     case PROCESSING = 'processing';
+    case APPROVED = 'approved';
+    case REJECTED = 'rejected';
     case CLOSED = 'closed';
 
     public static function fromValue(string $value): self
@@ -21,7 +23,9 @@ enum LeadStatusEnum: string
     {
         return match ($this) {
             self::NEW => [self::PROCESSING],
-            self::PROCESSING => [self::CLOSED],
+            self::PROCESSING => [self::CLOSED, self::APPROVED, self::REJECTED],
+            self::APPROVED => [self::CLOSED],
+            self::REJECTED => [self::CLOSED],
             self::CLOSED => [],
         };
     }

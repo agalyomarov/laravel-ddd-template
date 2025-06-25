@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Employee\Enums;
+namespace App\Domain\Shared\Enums;
 
 enum RoleEnum: string
 {
     case OPERATOR = 'operator';
     case MANAGER = 'manager';
-    case CREDIT = 'credit';
+    case CREDIT_DEPARTMENT = 'credit_department';
 
     public static function fromValue(string $value): self
     {
