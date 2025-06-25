@@ -56,7 +56,7 @@ final class Lead
 
         return $data;
     }
-    private function validateComment(string $data): ?string
+    private function validateComment(?string $data): ?string
     {
         if ($data !== null && mb_strlen($data) > 1000) {
             throw new InvalidArgumentException('Комментарий слишком длинный');
