@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+namespace App\Domain\Lead\Specifications;
+
 use App\Domain\Lead\Aggregate\Lead;
 use App\Domain\Lead\Enums\LeadStatusEnum;
 use App\Domain\Shared\Enums\RoleEnum;

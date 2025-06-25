@@ -7,7 +7,7 @@ namespace App\Domain\Lead\Specifications;
 use App\Domain\Shared\Enums\RoleEnum;
 use App\Domain\Lead\Enums\LeadStatusEnum;
 
-class LeadVisibleForRoleSpecification
+class LeadVisibilityScopeByRoleSpecification
 {
     public function __construct(private RoleEnum $role) {}
 
