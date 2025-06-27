@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Lead\Factories;
+namespace App\Domain\Factories;
 
-use App\Domain\Lead\Aggregate\Lead;
+use App\Domain\Aggregate\Lead;
 use App\Domain\Shared\Enums\RoleEnum;
 use App\Domain\Lead\Enums\LeadSource;
 use App\Domain\Lead\Enums\LeadStatusEnum;

@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Employee\Entities;
+namespace App\Domain\Aggregate;
+
 
 use App\Domain\Shared\Enums\RoleEnum;
 use InvalidArgumentException;

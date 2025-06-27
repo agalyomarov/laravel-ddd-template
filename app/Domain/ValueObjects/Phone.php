@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Lead\ValueObjects;
+namespace App\Domain\ValueObjects;
 
 use InvalidArgumentException;
 

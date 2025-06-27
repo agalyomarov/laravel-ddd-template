@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Domain\Lead\Aggregate;
+namespace App\Domain\Aggregate;
 
-use App\Domain\Lead\Enums\LeadStatusEnum;
-use App\Domain\Lead\ValueObjects\Lead\Phone;
+use App\Domain\Enums\LeadStatusEnum;
+use App\Domain\ValueObjects\Phone;
 use InvalidArgumentException;
 use LogicException;
 

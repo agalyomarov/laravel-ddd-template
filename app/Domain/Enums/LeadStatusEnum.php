@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Lead\Enums;
+namespace App\Domain\Enums;
 
 use LogicException;
 
