@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\Controllers\Admin;
+namespace App\Http\Controllers\Admin;
 
-use App\DTO\Admin\Category\CreateCategoryDTO;
-use App\Services\Admin\CategoryService;
+use App\Domain\DTO\Admin\Category\CreateCategoryDTO;
+use App\Domain\Services\Admin\CategoryService;
 use Illuminate\Support\Facades\Request;
 
 class CategoryController
